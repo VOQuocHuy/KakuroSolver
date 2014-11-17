@@ -6,19 +6,47 @@ def input_console():
     K = input()
     M = input()
     #input =[[Node(0,0) for row in range(0,K)] for column in range(0,K)]
-    inputMatrix =[[0 for row in range(0,K)] for column in range(0,K)]
+    input_matrix =[[0 for row in range(0,K)] for column in range(0,K)]
 
     for i in range(0,K):
         for j in range(0,M):
             node_type,node_value = raw_input().split(' ')
-            input[i][j] = Node(int(node_type),int(node_value))
+            input[i][j] = Node(node_type,node_value)
     #print input[0][0].node_type
-    return inputMatrix
+    return input_matrix,K,M
 
 def input_file():
+    input_matrix=[]
     handler = open("testcases/input.txt")
     text= handler.readlines()
-    print text
+    M= len(text)
+    N=0;
+    for line in text:
+        elements = line.replace("\n","").split(" ")
+        print (elements)
+        N= len(elements)
+        row = []
+        for element in elements:
+            #print "processing element"+ element
+            if element.find(':')!=-1:
+                #print "Creating constraint node"
+                row.append(Node(1,element))
+            else:
+                if int(element)==-1:
+                    #print "Creating blank node"
+                    row.append(Node(-1,-1))
+                else:
+                #    print "Creating value node"
+                    row.append(Node(0,int(element)))
 
-input_file()
+        input_matrix.append(row)
+    #print input_matrix
+    return input_matrix,M,N
+
+
+matrix,M,N= input_file()
+#matrix,K,M = input_console()
+game= Game(matrix,M,N)
+game.print_matrix()
+game.node_consistency()
 
