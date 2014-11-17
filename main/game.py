@@ -18,7 +18,7 @@ class Game:
 
     def solve(self):
         # The Algorithm goes here
-        print "Solving the KAKURO"
+        print "Solving KAKURO"
 
     def print_matrix(self):
         for i in range(0,self.rows):
@@ -37,27 +37,54 @@ class Game:
                     print "i = "+ str(i)
                     print "j = "+str(j)
                     col_constraint= self.matrix[i][j].col_constraint;
-                    print col_constraint
+                    #print col_constraint
                     if(col_constraint!=-1):
                         print "Reducing domain for cells in the same column"
                         # found a valid column constraint for this node
                         # search all rows greater than i till the next constraint node or black node and check
                         # for node consistency
                         k=i+1;
+                        blankCount=0
                         while k<self.rows and (self.matrix[k][j].node_type!=NodeType.BLANK_NODE or self.matrix[k][j].node_type!=NodeType.CONSTRAINT_NODE):
-                            for key in  self.matrix[k][j].domain.keys():
-                                if key>=col_constraint:
-                                    del self.matrix[k][j].domain[key]
+                            blankCount=blankCount+1
+                            #for key in  self.matrix[k][j].domain.keys():
+                            #    if key>=col_constraint:
+                            #        del self.matrix[k][j].domain[key]
                             k=k+1
 
+                        # further reduce the domain by eliminating constraint - {number of blank boxes}
+
+                        k=i+1;
+                        if(blankCount>=1):
+                            while k<self.rows and (self.matrix[k][j].node_type!=NodeType.BLANK_NODE or self.matrix[k][j].node_type!=NodeType.CONSTRAINT_NODE):
+                                offset = blankCount*(blankCount-1)/2
+                                print "offset= "+str(offset)
+                                for key in  self.matrix[k][j].domain.keys():
+                                    if key>=col_constraint-offset:
+                                        del self.matrix[k][j].domain[key]
+                                k += 1
+                    self.print_matrix()
+                    # doing the same thing for row constraints
                     row_constraint = self.matrix[i][j].row_constraint;
-                    print row_constraint
+                    print "row_constraint " +str(row_constraint)
                     if row_constraint!=-1:
+                        k=j+1;
+                        blankCount=0
+                        while k<self.cols and (self.matrix[i][k].node_type!=NodeType.BLANK_NODE or self.matrix[i][k].node_type!=NodeType.CONSTRAINT_NODE):
+                            blankCount+=1
+                            #for key in self.matrix[i][k].domain.keys():
+                             #   if key>col_constraint:
+                              #      del self.matrix[k][j].domain[key]
+                            k=k+1
                         print "Reducing domain for cells in the same row"
                         k=j+1;
-                        while k<self.cols and (self.matrix[i][k].node_type!=NodeType.BLANK_NODE or self.matrix[i][k].node_type!=NodeType.CONSTRAINT_NODE):
-                            for key in self.matrix[i][k].domain.keys():
-                                if key>col_constraint:
-                                    del self.matrix[k][j].domain[key]
-                            k=k+1
-        self.print_matrix()
+                        if blankCount>0:
+                            offset= blankCount*(blankCount-1)/2
+                            print "offset= "+str(offset)
+                            while k<self.cols and (self.matrix[i][k].node_type!=NodeType.BLANK_NODE or self.matrix[i][k].node_type!=NodeType.CONSTRAINT_NODE):
+                                for key in self.matrix[i][k].domain.keys():
+                                    if key>row_constraint-offset:
+                                        del self.matrix[i][k].domain[key]
+                                k=k+1
+                        self.print_matrix()
+
