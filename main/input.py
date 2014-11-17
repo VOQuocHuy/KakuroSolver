@@ -17,7 +17,7 @@ def input_console():
 
 def input_file():
     input_matrix=[]
-    handler = open("testcases/input.txt")
+    handler = open("testcases/testcase2.txt")
     text= handler.readlines()
     M= len(text)
     N=0;
@@ -48,5 +48,5 @@ matrix,M,N= input_file()
 #matrix,K,M = input_console()
 game= Game(matrix,M,N)
 game.print_matrix()
-game.node_consistency()
+game.formulate()
 

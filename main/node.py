@@ -4,7 +4,7 @@ __author__ = 'prateek'
 class NodeType:
     VALUE_NODE=0
     CONSTRAINT_NODE=1
-    BLANK_NODE=-1
+    BLACK_NODE=-1
 #This class represents a node in the matrix
 # Type 0 corresponds to the value node
 # Type 1 corresponds to the constraint node

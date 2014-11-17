@@ -6,19 +6,40 @@ class Game:
     matrix = []
     rows =0
     cols =0
+    solutionMatrix=[]
+
     def __init__(self,matrix,row_count,column_count):
         self.matrix = matrix
         self.rows=row_count
         self.cols = column_count
+        self.solutionMatrix=[[-1 for i in range(0,self.rows)] for j in range(0,self.cols)]
+        print self.solutionMatrix
 
     def formulate(self):
         print "Starting problem formulation"
+        self.node_consistency()
+        self.solve()
         # formulate the problem and add data structures which might help solve the problem
         # instrument the matrix to populate the data structures
 
     def solve(self):
         # The Algorithm goes here
         print "Solving KAKURO"
+
+
+
+    def bruteForceSolver(self):
+
+        for i in range(0,self.rows):
+            for j in range(0,self.cols):
+                if self.matrix[i][j].node_type==NodeType.VALUE_NODE:
+                    print "Assigning value to this node from its domain"
+                    for dom in self.matrix[i][j].domain:
+                        self.solutionMatrix[i][j]= dom
+
+
+
+
 
     def print_matrix(self):
         for i in range(0,self.rows):
@@ -45,7 +66,7 @@ class Game:
                         # for node consistency
                         k=i+1;
                         blankCount=0
-                        while k<self.rows and (self.matrix[k][j].node_type!=NodeType.BLANK_NODE or self.matrix[k][j].node_type!=NodeType.CONSTRAINT_NODE):
+                        while k<self.rows and (self.matrix[k][j].node_type!=NodeType.BLACK_NODE or self.matrix[k][j].node_type!=NodeType.CONSTRAINT_NODE):
                             blankCount=blankCount+1
                             #for key in  self.matrix[k][j].domain.keys():
                             #    if key>=col_constraint:
@@ -56,11 +77,11 @@ class Game:
 
                         k=i+1;
                         if(blankCount>=1):
-                            while k<self.rows and (self.matrix[k][j].node_type!=NodeType.BLANK_NODE or self.matrix[k][j].node_type!=NodeType.CONSTRAINT_NODE):
+                            while k<self.rows and (self.matrix[k][j].node_type!=NodeType.BLACK_NODE or self.matrix[k][j].node_type!=NodeType.CONSTRAINT_NODE):
                                 offset = blankCount*(blankCount-1)/2
                                 print "offset= "+str(offset)
                                 for key in  self.matrix[k][j].domain.keys():
-                                    if key>=col_constraint-offset:
+                                    if key>col_constraint-offset:
                                         del self.matrix[k][j].domain[key]
                                 k += 1
                     self.print_matrix()
@@ -70,7 +91,7 @@ class Game:
                     if row_constraint!=-1:
                         k=j+1;
                         blankCount=0
-                        while k<self.cols and (self.matrix[i][k].node_type!=NodeType.BLANK_NODE or self.matrix[i][k].node_type!=NodeType.CONSTRAINT_NODE):
+                        while k<self.cols and (self.matrix[i][k].node_type!=NodeType.BLACK_NODE or self.matrix[i][k].node_type!=NodeType.CONSTRAINT_NODE):
                             blankCount+=1
                             #for key in self.matrix[i][k].domain.keys():
                              #   if key>col_constraint:
@@ -81,7 +102,7 @@ class Game:
                         if blankCount>0:
                             offset= blankCount*(blankCount-1)/2
                             print "offset= "+str(offset)
-                            while k<self.cols and (self.matrix[i][k].node_type!=NodeType.BLANK_NODE or self.matrix[i][k].node_type!=NodeType.CONSTRAINT_NODE):
+                            while k<self.cols and (self.matrix[i][k].node_type!=NodeType.BLACK_NODE or self.matrix[i][k].node_type!=NodeType.CONSTRAINT_NODE):
                                 for key in self.matrix[i][k].domain.keys():
                                     if key>row_constraint-offset:
                                         del self.matrix[i][k].domain[key]
