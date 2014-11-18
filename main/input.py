@@ -21,25 +21,28 @@ def input_file():
     text= handler.readlines()
     M= len(text)
     N=0;
+    i=0;
     for line in text:
         elements = line.replace("\n","").split(" ")
         print (elements)
         N= len(elements)
         row = []
+        j=0
         for element in elements:
             #print "processing element"+ element
             if element.find(':')!=-1:
                 #print "Creating constraint node"
-                row.append(Node(1,element))
+                row.append(Node(i,j,1,element))
             else:
                 if int(element)==-1:
                     #print "Creating blank node"
-                    row.append(Node(-1,-1))
+                    row.append(Node(i,j,-1,-1))
                 else:
                 #    print "Creating value node"
-                    row.append(Node(0,int(element)))
-
+                    row.append(Node(i,j,0,int(element)))
+            j=j+1
         input_matrix.append(row)
+        i+=1
     #print input_matrix
     return input_matrix,M,N
 

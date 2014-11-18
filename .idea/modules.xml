@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Kakuro.iml" filepath="$PROJECT_DIR$/.idea/Kakuro.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../KakuroGit/pykakuro/.idea/pykakuro.iml" filepath="$PROJECT_DIR$/../KakuroGit/pykakuro/.idea/pykakuro.iml" />
     </modules>
   </component>
 </project>
