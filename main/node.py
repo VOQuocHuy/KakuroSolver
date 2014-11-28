@@ -31,6 +31,7 @@ class Node:
                 self.domain[i]=True
         else:
             self.domain={}
+        self.prev_domain={}
 
         if self.node_type== NodeType.CONSTRAINT_NODE:
             col_constraint,row_constraint = self.node_value.split(':')
@@ -45,6 +46,9 @@ class Node:
                 self.row_constraint= int(row_constraint)
             else:
                 self.row_constraint=-1
+        if self.node_type==NodeType.VALUE_NODE:
+            self.left_constraint_coord=None
+            self.top_constraint_coord =None
 
     def set_value(self,value):
         self.node_value= value

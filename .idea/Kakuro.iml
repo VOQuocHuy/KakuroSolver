@@ -5,6 +5,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="pykakuro" />
+    <orderEntry type="module" module-name="GFG" />
   </component>
 </module>
 

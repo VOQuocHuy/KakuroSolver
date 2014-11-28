@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$USER_HOME$/Work/GFG/.idea/GFG.iml" filepath="$USER_HOME$/Work/GFG/.idea/GFG.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Kakuro.iml" filepath="$PROJECT_DIR$/.idea/Kakuro.iml" />
       <module fileurl="file://$PROJECT_DIR$/../KakuroGit/pykakuro/.idea/pykakuro.iml" filepath="$PROJECT_DIR$/../KakuroGit/pykakuro/.idea/pykakuro.iml" />
     </modules>
