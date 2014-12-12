@@ -2,6 +2,7 @@ __author__ = 'prateek'
 from node import Node
 from game import Game
 
+
 def input_console():
     K = input()
     M = input()
@@ -48,7 +49,6 @@ def input_file():
 
 
 matrix,M,N= input_file()
-#matrix,K,M = input_console()
 game= Game(matrix,M,N)
 game.print_matrix()
 game.formulate()

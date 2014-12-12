@@ -32,6 +32,8 @@ class Node:
         else:
             self.domain={}
         self.prev_domain={}
+        if self.node_type== NodeType.VALUE_NODE:
+            self.visited=False
 
         if self.node_type== NodeType.CONSTRAINT_NODE:
             col_constraint,row_constraint = self.node_value.split(':')

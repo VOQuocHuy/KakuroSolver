@@ -19,12 +19,18 @@ class Game:
         print self.solutionMatrix
 
     def formulate(self):
+        """
+        This method is for formulating the problem. Follows the following steps
+        1) Enforce node consistency
+        2) Creates a Constraint Graph
+        3) Solves the Formed Graph by Backtrack search with Forward Checking and Constraint propagation
+        """
         print "Starting problem formulation"
         self.print_matrix()
         self.node_consistency()
         #self.init_unsolved()
         self.create_constraint_graph()
-        self.print_constraint_graph()
+        #self.print_constraint_graph()
         self.solve()
         self.print_matrix()
 
@@ -34,11 +40,20 @@ class Game:
     def solve(self):
         # The Algorithm goes here
         print "Solving KAKURO"
-        self.DFS(self.matrix[0][0])
 
+        #self.DFS(self.matrix[0][0])
+        self.BackTrackingSearch(self.getNextMostConstrainedVar())
 
     def check_constraint_violated(self,node):
-
+        """
+        Method for forward checking during backtrack search
+        :param node:
+        :return: True if any constraint is violated, False if no constraint violated
+        """
+        """
+        :param node:
+        :return:
+        """
         rowViolated=False
         colViolated=False
 
@@ -87,25 +102,48 @@ class Game:
             else:
                 return None
 
+    def getNextMostConstrainedVar(self):
+        print "Entering the most constrained variable"
+        mini=-1
+        minj=-1
+        minVal = 1000
+        found= False
+        for i in range(0,self.rows):
+            for j in range(0,self.cols):
+               if self.matrix[i][j].node_type==NodeType.VALUE_NODE and self.matrix[i][j].visited==False:
+                    found = True
+                    if len(self.matrix[i][j].domain)<minVal:
+                        mini = i
+                        minj =j
+                        minVal = len(self.matrix[i][j].domain)
+        if found==True:
+            return self.matrix[mini][minj]
+        else:
+            return None
+
+
+
 
     def DFS(self,node):
                 while node.node_type!=NodeType.VALUE_NODE:
                     node = self.getNextLeastConstrainedVar(node)
+                    #node = self.getNextMostConstrainedVar()
+                node.visited=True
                 works = False
                 #print "selected for DFS"
                 #print "i= "+str(node.row_index)
                 #print "j="+str(node.col_index)
-
                 domainCopy = copy.deepcopy(node.domain)
                 for i in domainCopy:
                     if i not in node.domain:
                         continue
-                    if node.row_index==1 and node.col_index==2 and i==3:
-                        print "hello"
+                    #if node.row_index==1 and node.col_index==2 and i==3:
+                    #    print "hello"
                     hash={}
-                    hashVal={}
+                    #hashVal={}
                     print "selected for DFS i="+str(node.row_index)+" j="+str(node.col_index)
                     print "Assigning domain value as "+str(i)
+                    print "Domain", node.domain
                     node.node_value=i
                     #backing up all domains of adj list in hash
                     #backup the values also
@@ -135,10 +173,12 @@ class Game:
                     else:
                         print "Constraint not violated"
                         nextNode= self.getNextLeastConstrainedVar(node)
+                        #nextNode = self.getNextMostConstrainedVar()
                         if nextNode == None:
                             return True
                         while(nextNode.node_type!=NodeType.VALUE_NODE):
                             nextNode= self.getNextLeastConstrainedVar(nextNode)
+                            #nextNode = self.getNextMostConstrainedVar()
                         if self.DFS(nextNode)==True:
                             works = True
                             return True
@@ -152,9 +192,83 @@ class Game:
                                 print self.matrix[a][b].domain
                             works = False
                             node.node_value=0
+
+                if works==False:
+                    node.visited=False
                 return works
 
+    def BackTrackingSearch(self,node):
+                #while node.node_type!=NodeType.VALUE_NODE:
+                    #node = self.getNextLeastConstrainedVar(node)
+                #node = self.getNextMostConstrainedVar()
+                node.visited=True
+                works = False
+                #print "selected for DFS"
+                #print "i= "+str(node.row_index)
+                #print "j="+str(node.col_index)
+                domainCopy = copy.deepcopy(node.domain)
+                for i in domainCopy:
+                    if i not in node.domain:
+                        continue
+                    #if node.row_index==1 and node.col_index==2 and i==3:
+                    #    print "hello"
+                    hash={}
+                    #hashVal={}
+                    print "selected for DFS i="+str(node.row_index)+" j="+str(node.col_index)
+                    print "Assigning domain value as "+str(i)
+                    print "Domain", node.domain
+                    node.node_value=i
+                    #backing up all domains of adj list in hash
+                    #backup the values also
+                    for a,b in node.adj_list:
+                        hash[(a*self.rows)+b]= copy.deepcopy(self.matrix[a][b].domain)
+                    for a,b in node.adj_list:
+                        print "a="+str(a)+" b="+str(b)
+                        print self.matrix[a][b].domain
+                        #self.matrix[a][b].domain=hash[(a*self.rows)+b]
+                        if i in self.matrix[a][b].domain:
+                            del self.matrix[a][b].domain[i]
+                        print self.matrix[a][b].domain
+                    # Need to do the following here
+                    # Take a backup of all domains of nodes in adjacency list of this node
+                    # Reduce domain of all adjacent nodes according to this assignment
 
+                    if self.check_constraint_violated(node)==True:
+                        print "Constraint violated"
+                        node.node_value=0
+                        for a,b in node.adj_list:
+                            print "Restoring domain for a="+str(a)+" b="+str(b)
+                            print self.matrix[a][b].domain
+                            self.matrix[a][b].domain=hash[(a*self.rows)+b]
+                            print self.matrix[a][b].domain
+                        works = False
+                        continue
+                    else:
+                        print "Constraint not violated"
+                        #nextNode= self.getNextLeastConstrainedVar(node)
+                        nextNode = self.getNextMostConstrainedVar()
+                        if nextNode == None:
+                            return True
+                        while(nextNode.node_type!=NodeType.VALUE_NODE):
+                            #nextNode= self.getNextLeastConstrainedVar(nextNode)
+                            nextNode = self.getNextMostConstrainedVar()
+                        if self.BackTrackingSearch(nextNode)==True:
+                            works = True
+                            return True
+                        else:
+                            node.node_value=0
+                            for a,b in node.adj_list:
+                                print "DFS failed Restoring domain for a="+str(a)+" b="+str(b)
+                                print self.matrix[a][b].domain
+                                self.matrix[a][b].domain=hash[(a*self.rows)+b]
+                                #self.matrix[a][b].node_value=0
+                                print self.matrix[a][b].domain
+                            works = False
+                            node.node_value=0
+
+                if works==False:
+                    node.visited=False
+                return works
 
 
 
@@ -189,7 +303,7 @@ class Game:
                     #print col_constraint
                     if(col_constraint!=-1):
                         col_list=[]
-                        print "Traversing constraints in the same column"
+                        #print "Traversing constraints in the same column"
                         # found a valid column constraint for this node
                         # search all rows greater than i till the next constraint node or black node
 
@@ -212,11 +326,11 @@ class Game:
 
                     # doing the same thing for row constraints
                     row_constraint = self.matrix[i][j].row_constraint;
-                    print "row_constraint " +str(row_constraint)
+                    #print "row_constraint " +str(row_constraint)
                     if row_constraint!=-1:
                         k=j+1;
                         row_list=[]
-                        print "Traversing constraints in the same row"
+                        #print "Traversing constraints in the same row"
                         while k<self.cols and (self.matrix[i][k].node_type!=NodeType.BLACK_NODE and self.matrix[i][k].node_type!=NodeType.CONSTRAINT_NODE):
                             self.matrix[i][k].left_constraint_coord=(i,j)
                             row_list.append(self.matrix[i][k])
@@ -269,15 +383,17 @@ class Game:
                             #        del self.matrix[k][j].domain[key]
                             k=k+1
 
-                        # further reduce the domain by eliminating constraint - {number of blank boxes}
+                        # further reduce the domain by eliminating constraint - {n(n-1)/2}
+                        # and constraint -{(n-1)(20-n)/2}
 
                         k=i+1;
                         if(blankCount>=1):
                             while k<self.rows and (self.matrix[k][j].node_type!=NodeType.BLACK_NODE and self.matrix[k][j].node_type!=NodeType.CONSTRAINT_NODE):
                                 offset = blankCount*(blankCount-1)/2
+                                offset2 = ((blankCount-1)*(20-blankCount))/2
                                 print "offset= "+str(offset)
                                 for key in  self.matrix[k][j].domain.keys():
-                                    if key>col_constraint-offset:
+                                    if key>col_constraint-offset or key<col_constraint-offset2:
                                         del self.matrix[k][j].domain[key]
                                 k += 1
                     self.print_matrix()
@@ -297,10 +413,11 @@ class Game:
                         k=j+1;
                         if blankCount>0:
                             offset= blankCount*(blankCount-1)/2
+                            offset2 = ((blankCount-1)*(20-blankCount))/2
                             print "offset= "+str(offset)
                             while k<self.cols and (self.matrix[i][k].node_type!=NodeType.BLACK_NODE and self.matrix[i][k].node_type!=NodeType.CONSTRAINT_NODE):
                                 for key in self.matrix[i][k].domain.keys():
-                                    if key>row_constraint-offset:
+                                    if key>row_constraint-offset or key<row_constraint-offset2:
                                         del self.matrix[i][k].domain[key]
                                 k=k+1
                         self.print_matrix()
