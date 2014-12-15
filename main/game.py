@@ -32,7 +32,7 @@ class Game:
         self.create_constraint_graph()
         #self.print_constraint_graph()
         self.solve()
-        self.print_matrix()
+        self.print_matrix_final()
 
         # formulate the problem and add data structures which might help solve the problem
         # instrument the matrix to populate the data structures
@@ -90,7 +90,7 @@ class Game:
 
         return rowViolated or colViolated
 
-    def getNextLeastConstrainedVar(self,node):
+    def getNextConstrainedVar(self,node):
         i= node.row_index
         j= node.col_index
         #placeholder for the least constrainted variable
@@ -126,7 +126,7 @@ class Game:
 
     def DFS(self,node):
                 while node.node_type!=NodeType.VALUE_NODE:
-                    node = self.getNextLeastConstrainedVar(node)
+                    node = self.getNextConstrainedVar(node)
                     #node = self.getNextMostConstrainedVar()
                 node.visited=True
                 works = False
@@ -143,19 +143,19 @@ class Game:
                     #hashVal={}
                     print "selected for DFS i="+str(node.row_index)+" j="+str(node.col_index)
                     print "Assigning domain value as "+str(i)
-                    print "Domain", node.domain
+                    #print "Domain", node.domain
                     node.node_value=i
                     #backing up all domains of adj list in hash
                     #backup the values also
                     for a,b in node.adj_list:
                         hash[(a*self.rows)+b]= copy.deepcopy(self.matrix[a][b].domain)
                     for a,b in node.adj_list:
-                        print "a="+str(a)+" b="+str(b)
-                        print self.matrix[a][b].domain
+                        #print "a="+str(a)+" b="+str(b)
+                        #print self.matrix[a][b].domain
                         #self.matrix[a][b].domain=hash[(a*self.rows)+b]
                         if i in self.matrix[a][b].domain:
                             del self.matrix[a][b].domain[i]
-                        print self.matrix[a][b].domain
+                        #print self.matrix[a][b].domain
                     # Need to do the following here
                     # Take a backup of all domains of nodes in adjacency list of this node
                     # Reduce domain of all adjacent nodes according to this assignment
@@ -164,20 +164,20 @@ class Game:
                         print "Constraint violated"
                         node.node_value=0
                         for a,b in node.adj_list:
-                            print "Restoring domain for a="+str(a)+" b="+str(b)
-                            print self.matrix[a][b].domain
+                        #    print "Restoring domain for a="+str(a)+" b="+str(b)
+                        #    print self.matrix[a][b].domain
                             self.matrix[a][b].domain=hash[(a*self.rows)+b]
-                            print self.matrix[a][b].domain
+                        #    print self.matrix[a][b].domain
                         works = False
                         continue
                     else:
-                        print "Constraint not violated"
-                        nextNode= self.getNextLeastConstrainedVar(node)
+                        #print "Constraint not violated"
+                        nextNode= self.getNextConstrainedVar(node)
                         #nextNode = self.getNextMostConstrainedVar()
                         if nextNode == None:
                             return True
                         while(nextNode.node_type!=NodeType.VALUE_NODE):
-                            nextNode= self.getNextLeastConstrainedVar(nextNode)
+                            nextNode= self.getNextConstrainedVar(nextNode)
                             #nextNode = self.getNextMostConstrainedVar()
                         if self.DFS(nextNode)==True:
                             works = True
@@ -185,11 +185,11 @@ class Game:
                         else:
                             node.node_value=0
                             for a,b in node.adj_list:
-                                print "DFS failed Restoring domain for a="+str(a)+" b="+str(b)
-                                print self.matrix[a][b].domain
+                                #print "DFS failed Restoring domain for a="+str(a)+" b="+str(b)
+                                #print self.matrix[a][b].domain
                                 self.matrix[a][b].domain=hash[(a*self.rows)+b]
                                 #self.matrix[a][b].node_value=0
-                                print self.matrix[a][b].domain
+                                #print self.matrix[a][b].domain
                             works = False
                             node.node_value=0
 
@@ -199,7 +199,7 @@ class Game:
 
     def BackTrackingSearch(self,node):
                 #while node.node_type!=NodeType.VALUE_NODE:
-                    #node = self.getNextLeastConstrainedVar(node)
+                    #node = self.getNextConstrainedVar(node)
                 #node = self.getNextMostConstrainedVar()
                 node.visited=True
                 works = False
@@ -215,20 +215,20 @@ class Game:
                     hash={}
                     #hashVal={}
                     print "selected for DFS i="+str(node.row_index)+" j="+str(node.col_index)
-                    print "Assigning domain value as "+str(i)
-                    print "Domain", node.domain
+                    #print "Assigning domain value as "+str(i)
+                    #print "Domain", node.domain
                     node.node_value=i
                     #backing up all domains of adj list in hash
                     #backup the values also
                     for a,b in node.adj_list:
                         hash[(a*self.rows)+b]= copy.deepcopy(self.matrix[a][b].domain)
                     for a,b in node.adj_list:
-                        print "a="+str(a)+" b="+str(b)
-                        print self.matrix[a][b].domain
+                    #    print "a="+str(a)+" b="+str(b)
+                    #    print self.matrix[a][b].domain
                         #self.matrix[a][b].domain=hash[(a*self.rows)+b]
                         if i in self.matrix[a][b].domain:
                             del self.matrix[a][b].domain[i]
-                        print self.matrix[a][b].domain
+                    #    print self.matrix[a][b].domain
                     # Need to do the following here
                     # Take a backup of all domains of nodes in adjacency list of this node
                     # Reduce domain of all adjacent nodes according to this assignment
@@ -237,20 +237,20 @@ class Game:
                         print "Constraint violated"
                         node.node_value=0
                         for a,b in node.adj_list:
-                            print "Restoring domain for a="+str(a)+" b="+str(b)
-                            print self.matrix[a][b].domain
+                            #print "Restoring domain for a="+str(a)+" b="+str(b)
+                            #print self.matrix[a][b].domain
                             self.matrix[a][b].domain=hash[(a*self.rows)+b]
-                            print self.matrix[a][b].domain
+                            #print self.matrix[a][b].domain
                         works = False
                         continue
                     else:
                         print "Constraint not violated"
-                        #nextNode= self.getNextLeastConstrainedVar(node)
+                        #nextNode= self.getNextConstrainedVar(node)
                         nextNode = self.getNextMostConstrainedVar()
                         if nextNode == None:
                             return True
                         while(nextNode.node_type!=NodeType.VALUE_NODE):
-                            #nextNode= self.getNextLeastConstrainedVar(nextNode)
+                            #nextNode= self.getNextConstrainedVar(nextNode)
                             nextNode = self.getNextMostConstrainedVar()
                         if self.BackTrackingSearch(nextNode)==True:
                             works = True
@@ -258,11 +258,11 @@ class Game:
                         else:
                             node.node_value=0
                             for a,b in node.adj_list:
-                                print "DFS failed Restoring domain for a="+str(a)+" b="+str(b)
-                                print self.matrix[a][b].domain
+                    #            print "DFS failed Restoring domain for a="+str(a)+" b="+str(b)
+                    #            print self.matrix[a][b].domain
                                 self.matrix[a][b].domain=hash[(a*self.rows)+b]
                                 #self.matrix[a][b].node_value=0
-                                print self.matrix[a][b].domain
+                                #print self.matrix[a][b].domain
                             works = False
                             node.node_value=0
 
@@ -271,20 +271,25 @@ class Game:
                 return works
 
 
-
-
-
-
-
+    def print_matrix_final(self):
+        self.unsolvedCount=0
+        for i in range(0,self.rows):
+            print ""
+            for j in range(0,self.cols):
+                #print str(self.matrix[i][j].node_value) + " domain: "+str(self.matrix[i][j].domain.keys())
+                print str(self.matrix[i][j].node_value).ljust(6),
+                #print "row id : "+str(self.matrix[i][j].row_index)
+                #print "col id : "+str(self.matrix[i][j].col_index)
 
 
 
     def print_matrix(self):
         self.unsolvedCount=0
         for i in range(0,self.rows):
-            print "--------------"
+            print "---------------"
             for j in range(0,self.cols):
                 print str(self.matrix[i][j].node_value) + " domain: "+str(self.matrix[i][j].domain.keys())
+                #print str(self.matrix[i][j].node_value).ljust(6),
                 #print "row id : "+str(self.matrix[i][j].row_index)
                 #print "col id : "+str(self.matrix[i][j].col_index)
 
