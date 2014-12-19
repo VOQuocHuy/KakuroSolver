@@ -9,7 +9,7 @@ class NodeType:
 # Type 0 corresponds to the value node
 # Type 1 corresponds to the constraint node
 # Type -1 corresponds to the black node
-class Node:
+class Node(object):
     #node_type=-1
     #node_value=-1
     #col_constraint = -1
@@ -25,6 +25,7 @@ class Node:
         self.node_type=type
         self.node_value=value
         self.adj_list=[]
+        self.domain={}
         if self.node_type== NodeType.VALUE_NODE:
             self.domain={}
             for i in range(1,10):
@@ -51,6 +52,12 @@ class Node:
         if self.node_type==NodeType.VALUE_NODE:
             self.left_constraint_coord=None
             self.top_constraint_coord =None
+
+    def __cmp__(self,other):
+            if other!=None:
+                return len(self.domain)-len(other.domain)
+            else:
+                return True
 
     def set_value(self,value):
         self.node_value= value

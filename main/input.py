@@ -1,6 +1,8 @@
 __author__ = 'prateek'
 from node import Node
 from game import Game
+import time
+import sys
 
 
 def input_console():
@@ -18,7 +20,10 @@ def input_console():
 
 def input_file():
     input_matrix=[]
-    handler = open("testcases/testcase6.txt")
+    path = sys.argv[1]
+    if path=="":
+        path = "testcases/testcase5.txt"
+    handler = open(path)
     text= handler.readlines()
     M= len(text)
     N=0;
@@ -49,7 +54,12 @@ def input_file():
 
 
 matrix,M,N= input_file()
+start = time.time()
 game= Game(matrix,M,N)
 game.print_matrix()
 game.formulate()
+end = time.time()
+print "\n"
+print "Running Time"
+print end-start
 

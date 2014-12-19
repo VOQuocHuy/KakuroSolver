@@ -2,6 +2,7 @@ __author__ = 'prateek'
 from node import Node
 from node import NodeType
 import copy
+import heapq
 
 class Game:
     matrix = []
@@ -16,7 +17,16 @@ class Game:
         self.solutionMatrix=[[-1 for i in range(0,self.rows)] for j in range(0,self.cols)]
         self.unsolvedCount=-1
         self.unsolvedPositions=[]
+        self.heap=[]
         print self.solutionMatrix
+
+    def form_heap(self):
+        for i in range(0,self.rows):
+            for j in range(0,self.cols):
+               if self.matrix[i][j].node_type==NodeType.VALUE_NODE:
+                    heapq.heappush(self.heap,self.matrix[i][j])
+
+
 
     def formulate(self):
         """
@@ -27,12 +37,14 @@ class Game:
         """
         print "Starting problem formulation"
         self.print_matrix()
-        self.node_consistency()
-        #self.init_unsolved()
+        self.i_consistency()
+        self.form_heap()
         self.create_constraint_graph()
         #self.print_constraint_graph()
         self.solve()
+        #self.solveBasic()
         self.print_matrix_final()
+        #print self.heap
 
         # formulate the problem and add data structures which might help solve the problem
         # instrument the matrix to populate the data structures
@@ -40,9 +52,12 @@ class Game:
     def solve(self):
         # The Algorithm goes here
         print "Solving KAKURO"
+        #self.BackTrackingSearch(self.getNextMostConstrainedVar())
+        self.BackTrackingSearch(self.mostConstrainedFromHeap())
 
-        #self.DFS(self.matrix[0][0])
-        self.BackTrackingSearch(self.getNextMostConstrainedVar())
+    def solveBasic(self):
+        print "Solving Kakuro"
+        self.DFS(self.matrix[0][0])
 
     def check_constraint_violated(self,node):
         """
@@ -121,6 +136,11 @@ class Game:
         else:
             return None
 
+    def mostConstrainedFromHeap(self):
+            if len(self.heap)==0:
+                return None
+            node = heapq.heappop(self.heap)
+            return node
 
 
 
@@ -141,8 +161,8 @@ class Game:
                     #    print "hello"
                     hash={}
                     #hashVal={}
-                    print "selected for DFS i="+str(node.row_index)+" j="+str(node.col_index)
-                    print "Assigning domain value as "+str(i)
+                    #print "selected for DFS i="+str(node.row_index)+" j="+str(node.col_index)
+                    #print "Assigning domain value as "+str(i)
                     #print "Domain", node.domain
                     node.node_value=i
                     #backing up all domains of adj list in hash
@@ -161,7 +181,7 @@ class Game:
                     # Reduce domain of all adjacent nodes according to this assignment
 
                     if self.check_constraint_violated(node)==True:
-                        print "Constraint violated"
+                        #print "Constraint violated"
                         node.node_value=0
                         for a,b in node.adj_list:
                         #    print "Restoring domain for a="+str(a)+" b="+str(b)
@@ -214,7 +234,7 @@ class Game:
                     #    print "hello"
                     hash={}
                     #hashVal={}
-                    print "selected for DFS i="+str(node.row_index)+" j="+str(node.col_index)
+                    #print "selected for DFS i="+str(node.row_index)+" j="+str(node.col_index)
                     #print "Assigning domain value as "+str(i)
                     #print "Domain", node.domain
                     node.node_value=i
@@ -234,7 +254,7 @@ class Game:
                     # Reduce domain of all adjacent nodes according to this assignment
 
                     if self.check_constraint_violated(node)==True:
-                        print "Constraint violated"
+                        #print "Constraint violated"
                         node.node_value=0
                         for a,b in node.adj_list:
                             #print "Restoring domain for a="+str(a)+" b="+str(b)
@@ -244,14 +264,14 @@ class Game:
                         works = False
                         continue
                     else:
-                        print "Constraint not violated"
-                        #nextNode= self.getNextConstrainedVar(node)
-                        nextNode = self.getNextMostConstrainedVar()
+                        #print "Constraint not violated"
+                        nextNode= self.mostConstrainedFromHeap()
+                        #nextNode = self.getNextMostConstrainedVar()
                         if nextNode == None:
                             return True
                         while(nextNode.node_type!=NodeType.VALUE_NODE):
-                            #nextNode= self.getNextConstrainedVar(nextNode)
-                            nextNode = self.getNextMostConstrainedVar()
+                            nextNode= self.mostConstrainedFromHeap()
+                            #nextNode = self.getNextMostConstrainedVar()
                         if self.BackTrackingSearch(nextNode)==True:
                             works = True
                             return True
@@ -266,8 +286,10 @@ class Game:
                             works = False
                             node.node_value=0
 
+
                 if works==False:
                     node.visited=False
+                    heapq.heappush(self.heap,node)
                 return works
 
 
@@ -362,7 +384,7 @@ class Game:
                 print "--------------"
 
 
-    def node_consistency(self):
+    def i_consistency(self):
         #going through the matrix looking for constraint nodes
         # if constraint node found, look for the next constraint node or black node
         for i in range(0,self.rows):

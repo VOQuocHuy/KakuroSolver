@@ -2,30 +2,25 @@
 
 To run the Kakuro Solver 
 
-python input.py
+python input.py <inputfile>
 
-### What is this repository for? ###
+For ex:- 
+python input.py testcases/testcase3.txt
+
+Here the input file is the testcase which contains the Kakuro problem.
+For the format of the testcase, please look in the testcases folder.
+
+For value to be filled  0 
+For a dark/blank node  -1
+For a constaint node  <column_sum>:<row_sum>
+
+Leave column_sum, row_sum empty for those which have no constaints on row or column
+
+Only row constaint represented as   ':<row_constraint>'
+Only column constaint                <column_constraint>:
+
+
 
 * An efficient Kakuro Solver
 * Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
